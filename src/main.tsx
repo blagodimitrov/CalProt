@@ -1,32 +1,11 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App.tsx'
 import './index.css'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Progress from './components/ProgressBar.tsx';
-import CurrentDate from './components/Date.tsx';
-import Calendar from './components/Calendar.tsx';
-import FatLoss from './components/FatLoss.tsx';
-import Journal from './components/Journal.tsx';
 
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <div className='Container'>
-
-    <div className='LeftColumn'>
-    <Calendar />
-    </div>
-    
-    <div className='RightColumn'>
-    <CurrentDate />
-    <Journal />
-
-    <Progress />
-    <FatLoss />
-
-    </div>
-  
-    </div>
-    
-  </React.StrictMode>,
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
 )
+

@@ -1,19 +1,40 @@
-import ProgressBar from 'react-bootstrap/ProgressBar';
+import ProgressBar from "react-bootstrap/ProgressBar";
 
-function Progress() {
-  
-  const calorieGoal = 2600;
-  const calorieCurrent = 150;
-  const proteinGoal = 120;
-  const proteinCurrent = 10;
-  const calorieNow = Math.round(calorieCurrent/calorieGoal*100);
-  const proteinNow = Math.round(proteinCurrent/proteinGoal*100);
-  
-  return (<div className='TrackerContainer'>
-    <div className='TrackerSegment'><p>Calories {calorieCurrent}/{calorieGoal} kcal</p><ProgressBar variant="warning" now={calorieNow} /></div>
-    <div className='TrackerSegment'><p>Protein {proteinCurrent}/{proteinGoal} grams</p><ProgressBar variant="danger" now={proteinNow} /></div>
+type ProgressBarProps = {
+  calories: number;
+  protein: number;
+  calorieGoal: number;
+  proteinGoal: number;
+};
+
+function Progress({
+  calories,
+  protein,
+  calorieGoal,
+  proteinGoal,
+}: ProgressBarProps) {
+  return (
+    <div className="TrackerContainer">
+      <div className="TrackerSegment">
+        <p>
+          Calories {calories}/{calorieGoal} kcal
+        </p>
+        <ProgressBar
+          variant="warning"
+          now={Math.round((calories / calorieGoal) * 100)}
+        />
+      </div>
+      <div className="TrackerSegment">
+        <p>
+          Protein {protein}/{proteinGoal} grams
+        </p>
+        <ProgressBar
+          variant="danger"
+          now={Math.round((protein / proteinGoal) * 100)}
+        />
+      </div>
     </div>
-  )
+  );
 }
 
 export default Progress;
