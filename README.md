@@ -1,6 +1,6 @@
 # CalProt (SPA for calculating protein and calorie intake)
 
-This is a single page application built by me using React and TypeScript. You can use it to track your calorie and protein intake. There's some other additional calories.
+This is a website you can use to track your calorie and protein intake. There's some other additional features explained further below.
 
 ## Calorie and Protein Tracking
 
