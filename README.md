@@ -1,30 +1,24 @@
-# React + TypeScript + Vite
+# CalProt (SPA for calculating protein and calorie intake)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a single page application built by me using React and TypeScript. You can use it to track your calorie and protein intake. There's some other additional calories.
 
-Currently, two official plugins are available:
+## Calorie and Protein Tracking
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Input your meal information each day and get an overview
 
-## Expanding the ESLint configuration
+## Activity Tracking
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Along with calories and protein you can also input your daily activities and calories burned through them
 
-- Configure the top-level `parserOptions` property like this:
+## Goal Setter
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+You can also set your calorie and protein goal. In the near future I will incorporate an easy to use goal calculator.
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Date Selection and Backtracking
+
+You can select a date and look at your statistics of said day.
+
+- Click on the Calendar month selector and select a month.
+- After that you can click on any date to view your stats of the day.
+
+Built by Blagovest Dimitrov using React & TypeScript.
