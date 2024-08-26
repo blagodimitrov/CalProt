@@ -5,8 +5,8 @@ type JournalProps = {
   selectedDate: Date | null;
   setCalories: (calories: number) => void;
   setProtein: (protein: number) => void;
-  setActivity: (activity: number) => void;
   calorieGoal: number;
+  setActivity: (activity: number) => void;
 };
 
 function Journal({
@@ -21,12 +21,28 @@ function Journal({
   const [mealName, setMealName] = useState("");
   const [mealCalories, setMealCalories] = useState("");
   const [mealProtein, setMealProtein] = useState("");
-  const [activityName, setActivityName] = useState("Placeholder Activity");
-  const [activityBurntCalories, setActivityBurntCalories] = useState(0);
 
-  const handleKeyPress = (e) => {
+  const [activities, setActivities] = useState<
+    { activityName: string; activityBurntCalories: string }[]
+  >([]);
+  const [activityName, setActivityName] = useState("");
+  const [activityBurntCalories, setActivityBurntCalories] = useState("");
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
+
+      if (
+        !mealName.trim() ||
+        !mealCalories.trim() ||
+        !/^\d+$/.test(mealCalories) ||
+        !mealProtein.trim() ||
+        !/^\d+$/.test(mealProtein)
+      ) {
+        alert("Please fill in all fields correctly.");
+        return;
+      }
+
       const newMeal = {
         mealName,
         mealCalories,
@@ -41,22 +57,62 @@ function Journal({
     }
   };
 
+  const handleKeyPressActivity = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+
+      if (
+        !activityName.trim() ||
+        !activityBurntCalories.trim() ||
+        !/^\d+$/.test(activityBurntCalories)
+      ) {
+        alert("Please fill in all fields correctly.");
+        return;
+      }
+
+      const newActivity = {
+        activityName,
+        activityBurntCalories,
+      };
+
+      setActivities([...activities, newActivity]);
+
+      setActivityName("");
+      setActivityBurntCalories("");
+    }
+  };
+  const handleDeleteMeal = (index: number) => {
+    const updatedMeals = meals.filter((_, i) => i !== index);
+    setMeals(updatedMeals);
+  };
+
+  const handleDeleteActivity = (index: number) => {
+    const updatedActivities = activities.filter((_, i) => i !== index);
+    setActivities(updatedActivities);
+  };
+
   useEffect(() => {
-    // Calculate the total calories
-    const totalCalories = meals.reduce(
-      (acc, meal) => acc + parseFloat(meal.mealCalories || "0"),
+    const totalActivity = activities.reduce(
+      (acc, activity) =>
+        acc + parseFloat(activity.activityBurntCalories || "0"),
       0
     );
+
+    const totalCalories =
+      meals.reduce(
+        (acc, meal) => acc + parseFloat(meal.mealCalories || "0"),
+        0
+      ) - totalActivity;
 
     const totalProtein = meals.reduce(
       (acc, meal) => acc + parseFloat(meal.mealProtein || "0"),
       0
     );
 
-    // Update the setCalories prop
     setCalories(totalCalories);
+    setActivity(totalActivity);
     setProtein(totalProtein);
-  }, [meals, setCalories, setProtein]);
+  }, [meals, activities, setCalories, setProtein]);
 
   return (
     <>
@@ -73,7 +129,28 @@ function Journal({
         <tbody>
           {meals.map((meal, index) => (
             <tr key={index}>
-              <td>{meal.mealName}</td>
+              <td style={{ position: "relative" }}>
+                {meal.mealName}
+                <button
+                  onClick={() => handleDeleteMeal(index)}
+                  style={{
+                    position: "absolute",
+                    left: "-35px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    border: "none",
+                    paddingLeft: "8px",
+                    paddingRight: "9px",
+                    color: "red",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    borderRadius: "50%",
+                    fontSize: "1rem",
+                  }}
+                >
+                  X
+                </button>
+              </td>
               <td>{meal.mealCalories}</td>
               <td>{meal.mealProtein}</td>
             </tr>
@@ -82,8 +159,8 @@ function Journal({
             <td>
               <input
                 type="text"
-                id="fname"
-                name="fname"
+                id="mealName"
+                name="mealName"
                 placeholder="Name"
                 value={mealName}
                 onChange={(e) => setMealName(e.target.value)}
@@ -93,8 +170,8 @@ function Journal({
             <td>
               <input
                 type="text"
-                id="fname"
-                name="fname"
+                id="mealCalories"
+                name="mealCalories"
                 placeholder="Calories"
                 value={mealCalories}
                 onChange={(e) => setMealCalories(e.target.value)}
@@ -104,8 +181,8 @@ function Journal({
             <td>
               <input
                 type="text"
-                id="fname"
-                name="fname"
+                id="mealProtein"
+                name="mealProtein"
                 placeholder="Protein"
                 value={mealProtein}
                 onChange={(e) => setMealProtein(e.target.value)}
@@ -116,7 +193,7 @@ function Journal({
         </tbody>
       </Table>
 
-      <h1 className="JournalMeals">Today's Activity</h1>
+      <h1 className="JournalActivities">Today's Activities</h1>
       <Table striped bordered hover size="sm">
         <thead>
           <tr>
@@ -125,25 +202,54 @@ function Journal({
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>{activityName}</td>
-            <td>{activityBurntCalories}</td>
-          </tr>
+          {activities.map((activity, index) => (
+            <tr key={index}>
+              <td style={{ position: "relative" }}>
+                {activity.activityName}
+                <button
+                  onClick={() => handleDeleteActivity(index)}
+                  style={{
+                    position: "absolute",
+                    left: "-35px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    border: "none",
+                    paddingLeft: "8px",
+                    paddingRight: "9px",
+                    color: "red",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    borderRadius: "50%",
+                    fontSize: "1rem",
+                  }}
+                >
+                  X
+                </button>
+              </td>
+              <td>{activity.activityBurntCalories}</td>
+            </tr>
+          ))}
           <tr>
             <td>
               <input
                 type="text"
-                id="fname"
-                name="fname"
+                id="activityName"
+                name="activityName"
                 placeholder="Activity Name"
+                value={activityName}
+                onChange={(e) => setActivityName(e.target.value)}
+                onKeyDown={handleKeyPressActivity}
               />
             </td>
             <td>
               <input
                 type="text"
-                id="fname"
-                name="fname"
+                id="activityBurntCalories"
+                name="activityBurntCalories"
                 placeholder="Burnt Calorie Count"
+                value={activityBurntCalories}
+                onChange={(e) => setActivityBurntCalories(e.target.value)}
+                onKeyDown={handleKeyPressActivity}
               />
             </td>
           </tr>

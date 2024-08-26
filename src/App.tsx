@@ -13,8 +13,6 @@ function App() {
   const [activity, setActivity] = useState(0);
   const [calorieGoal, setCalorieGoal] = useState(2600);
   const [proteinGoal, setProteinGoal] = useState(120);
-  const [dayTracker, setDayTracker] = useState(0); // track how many days are filled with data
-  const [totalCalories, setTotalCalories] = useState(0);
 
   return (
     <>

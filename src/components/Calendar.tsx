@@ -24,11 +24,26 @@ function Calendar({
     year: new Date().getFullYear(),
   });
 
-  const handleDateClick = (date: Date) => {
-    onDateChange(date);
+  const handleDateClick = () => {
+    const currentDay = new Date().getDate(); // Get the current day of the month
+    const selectedDate = new Date(
+      selectedMonthData.year,
+      selectedMonthData.month - 1,
+      currentDay
+    );
+
+    onDateChange(selectedDate);
   };
 
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+  // Create a date object using the selected month, year, and current day
+  const currentDay = new Date().getDate();
+  const selectedDate = new Date(
+    selectedMonthData.year,
+    selectedMonthData.month - 1, // Month is zero-based in JavaScript Date
+    currentDay
+  );
 
   return (
     <div className="container">
@@ -58,22 +73,30 @@ function Calendar({
             <th>Protein</th>
             <th>Activity</th>
             <th>Allowed Calories</th>
-            <th>Protein Goal</th>
+            <th>Remaining Protein</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            onClick={() =>
-              handleDateClick(
-                new Date(selectedMonthData.year, selectedMonthData.month - 1, 1)
-              )
-            }
-          >
-            <td>1</td>
-            <td>{calories}</td>
-            <td>{protein}</td>
+          <tr onClick={handleDateClick}>
+            <td>{selectedDate.getDate()}</td>
+            <td
+              style={{
+                backgroundColor:
+                  calories > calorieGoal % 25 ? "#f2999f" : "#99f2c1",
+              }}
+            >
+              {calories}
+            </td>
+            <td
+              style={{
+                backgroundColor: protein < proteinGoal ? "#f2999f" : "#99f2c1",
+              }}
+            >
+              {protein}
+            </td>
             <td>{activity}</td>
-            <td>{calories - calorieGoal}</td>
+
+            <td>{calorieGoal - calories}</td>
             <td>{protein - proteinGoal}</td>
           </tr>
         </tbody>

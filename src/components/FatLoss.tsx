@@ -23,15 +23,14 @@ function FatLoss({ calories, calorieGoal }: FatLossProps) {
 
   return (
     <>
-      {" "}
       <div>{monthNames[currentMonth]} Fat Loss</div>
       <div className="FatLoss">
-        -{Math.round((-(calories - calorieGoal) / 7700) * 100) / 100}kg
+        {-Math.round((-(calories - calorieGoal) / 7700) * 100) / 100}kg
       </div>
       <div>Total Fat Loss</div>
       <div className="FatLoss">
-        -{Math.round((-(calories - calorieGoal) / 7700) * 100) / 100}kg
-      </div>{" "}
+        {-Math.round((-(calories - calorieGoal) / 7700) * 100) / 100}kg
+      </div>
     </>
   );
 }
