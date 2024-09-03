@@ -4,33 +4,23 @@ type FatLossProps = {
 };
 
 function FatLoss({ calories, calorieGoal }: FatLossProps) {
-  const date = new Date();
-  const currentMonth = date.getMonth();
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const fatLossCalculation = (calories: number, calorieGoal: number) => {
+    // Ensure there are valid values for calculation
+    if (calories === 0 || calorieGoal === 0) return 0; // Avoid division by zero
+
+    const totalCalories = calories - calorieGoal;
+    if (totalCalories <= 0) return 0; // No fat loss if calories are not exceeding the goal
+
+    return Math.round((-totalCalories / 7700) * 100) / 100;
+  };
 
   return (
     <>
-      <div>{monthNames[currentMonth]} Fat Loss</div>
-      <div className="FatLoss">
-        {-Math.round((-(calories - calorieGoal) / 7700) * 100) / 100}kg
-      </div>
       <div>Total Fat Loss</div>
       <div className="FatLoss">
-        {-Math.round((-(calories - calorieGoal) / 7700) * 100) / 100}kg
+        {fatLossCalculation(calories, calorieGoal)} kg
       </div>
+      <div></div>
     </>
   );
 }

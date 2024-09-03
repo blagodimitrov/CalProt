@@ -24,26 +24,94 @@ function Calendar({
     year: new Date().getFullYear(),
   });
 
-  const handleDateClick = () => {
-    const currentDay = new Date().getDate(); // Get the current day of the month
-    const selectedDate = new Date(
-      selectedMonthData.year,
-      selectedMonthData.month - 1,
-      currentDay
-    );
-
-    onDateChange(selectedDate);
-  };
-
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
-  // Create a date object using the selected month, year, and current day
-  const currentDay = new Date().getDate();
-  const selectedDate = new Date(
+  const today = new Date();
+  const currentMonth = today.getMonth() + 1;
+  const currentYear = today.getFullYear();
+
+  const isCurrentMonth =
+    selectedMonthData.month === currentMonth &&
+    selectedMonthData.year === currentYear;
+
+  const handleMonthChange = (newMonthData: { month: number; year: number }) => {
+    if (
+      newMonthData.year < currentYear ||
+      (newMonthData.year === currentYear && newMonthData.month <= currentMonth)
+    ) {
+      setSelectedMonthData(newMonthData);
+    }
+  };
+
+  const daysInMonth = new Date(
     selectedMonthData.year,
-    selectedMonthData.month - 1, // Month is zero-based in JavaScript Date
-    currentDay
-  );
+    selectedMonthData.month,
+    0
+  ).getDate();
+
+  const generateDateRows = () => {
+    const rows = [];
+    const lastDay = isCurrentMonth ? today.getDate() : daysInMonth;
+
+    for (let day = lastDay; day >= 1; day--) {
+      const date = new Date(
+        selectedMonthData.year,
+        selectedMonthData.month - 1,
+        day
+      );
+
+      const dateKey = date.toLocaleDateString();
+      const savedData = localStorage.getItem(dateKey);
+
+      let dayCalories = 0;
+      let dayProtein = 0;
+      let dayActivity = 0;
+
+      if (savedData) {
+        const { meals, activities } = JSON.parse(savedData);
+        dayActivity = activities.reduce(
+          (acc: number, activity: any) =>
+            acc + parseFloat(activity.activityBurntCalories || "0"),
+          0
+        );
+        dayCalories =
+          meals.reduce(
+            (acc: number, meal: any) =>
+              acc + parseFloat(meal.mealCalories || "0"),
+            0
+          ) - dayActivity;
+        dayProtein = meals.reduce(
+          (acc: number, meal: any) => acc + parseFloat(meal.mealProtein || "0"),
+          0
+        );
+      }
+
+      rows.push(
+        <tr key={dateKey} onClick={() => onDateChange(date)}>
+          <td>{day}</td>
+          <td
+            style={{
+              backgroundColor:
+                dayCalories > calorieGoal ? "#f2999f" : "#99f2c1",
+            }}
+          >
+            {dayCalories || 0}
+          </td>
+          <td
+            style={{
+              backgroundColor: dayProtein < proteinGoal ? "#f2999f" : "#99f2c1",
+            }}
+          >
+            {dayProtein || 0}
+          </td>
+          <td>{dayActivity || 0}</td>
+          <td>{calorieGoal - dayCalories}</td>
+          <td>{dayProtein - proteinGoal}</td>
+        </tr>
+      );
+    }
+    return rows;
+  };
 
   return (
     <div className="container">
@@ -58,7 +126,7 @@ function Calendar({
           <MonthPicker
             setIsOpen={setIsPickerOpen}
             selected={selectedMonthData}
-            onChange={setSelectedMonthData}
+            onChange={handleMonthChange}
             bgColorMonthActive="pink"
             size="small"
           />
@@ -76,30 +144,7 @@ function Calendar({
             <th>Remaining Protein</th>
           </tr>
         </thead>
-        <tbody>
-          <tr onClick={handleDateClick}>
-            <td>{selectedDate.getDate()}</td>
-            <td
-              style={{
-                backgroundColor:
-                  calories > calorieGoal % 25 ? "#f2999f" : "#99f2c1",
-              }}
-            >
-              {calories}
-            </td>
-            <td
-              style={{
-                backgroundColor: protein < proteinGoal ? "#f2999f" : "#99f2c1",
-              }}
-            >
-              {protein}
-            </td>
-            <td>{activity}</td>
-
-            <td>{calorieGoal - calories}</td>
-            <td>{protein - proteinGoal}</td>
-          </tr>
-        </tbody>
+        <tbody>{generateDateRows()}</tbody>
       </Table>
     </div>
   );

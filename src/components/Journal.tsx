@@ -2,11 +2,19 @@ import Table from "react-bootstrap/Table";
 import { useState, useEffect } from "react";
 
 type JournalProps = {
-  selectedDate: Date | null;
+  selectedDate: Date;
   setCalories: (calories: number) => void;
   setProtein: (protein: number) => void;
   calorieGoal: number;
   setActivity: (activity: number) => void;
+  activities: { activityName: string; activityBurntCalories: string }[];
+  meals: { mealName: string; mealCalories: string; mealProtein: string }[];
+  setMeals: (
+    meals: { mealName: string; mealCalories: string; mealProtein: string }[]
+  ) => void;
+  setActivities: (
+    activities: { activityName: string; activityBurntCalories: string }[]
+  ) => void;
 };
 
 function Journal({
@@ -14,17 +22,14 @@ function Journal({
   setCalories,
   setProtein,
   setActivity,
+  activities,
+  meals,
+  setMeals,
+  setActivities,
 }: JournalProps) {
-  const [meals, setMeals] = useState<
-    { mealName: string; mealCalories: string; mealProtein: string }[]
-  >([]);
   const [mealName, setMealName] = useState("");
   const [mealCalories, setMealCalories] = useState("");
   const [mealProtein, setMealProtein] = useState("");
-
-  const [activities, setActivities] = useState<
-    { activityName: string; activityBurntCalories: string }[]
-  >([]);
   const [activityName, setActivityName] = useState("");
   const [activityBurntCalories, setActivityBurntCalories] = useState("");
 
@@ -49,7 +54,15 @@ function Journal({
         mealProtein,
       };
 
-      setMeals([...meals, newMeal]);
+      const updatedMeals = [...meals, newMeal];
+      setMeals(updatedMeals);
+
+      // Update localStorage
+      const dateKey = selectedDate.toLocaleDateString();
+      localStorage.setItem(
+        dateKey,
+        JSON.stringify({ meals: updatedMeals, activities })
+      );
 
       setMealName("");
       setMealCalories("");
@@ -75,23 +88,58 @@ function Journal({
         activityBurntCalories,
       };
 
-      setActivities([...activities, newActivity]);
+      const updatedActivities = [...activities, newActivity];
+      setActivities(updatedActivities);
+
+      // Update localStorage
+      const dateKey = selectedDate.toLocaleDateString();
+      localStorage.setItem(
+        dateKey,
+        JSON.stringify({ meals, activities: updatedActivities })
+      );
 
       setActivityName("");
       setActivityBurntCalories("");
     }
   };
+
   const handleDeleteMeal = (index: number) => {
     const updatedMeals = meals.filter((_, i) => i !== index);
     setMeals(updatedMeals);
+
+    // Update localStorage
+    const dateKey =
+      selectedDate?.toLocaleDateString() || new Date().toLocaleDateString();
+    const savedData = localStorage.getItem(dateKey);
+    if (savedData) {
+      const { activities } = JSON.parse(savedData);
+      const newData = { meals: updatedMeals, activities };
+      localStorage.setItem(dateKey, JSON.stringify(newData));
+    }
+
+    // Recalculate and update the state
+    updateCaloriesAndProtein(updatedMeals, activities);
   };
 
   const handleDeleteActivity = (index: number) => {
     const updatedActivities = activities.filter((_, i) => i !== index);
     setActivities(updatedActivities);
+
+    // Update localStorage
+    const dateKey =
+      selectedDate?.toLocaleDateString() || new Date().toLocaleDateString();
+    const savedData = localStorage.getItem(dateKey);
+    if (savedData) {
+      const { meals } = JSON.parse(savedData);
+      const newData = { meals, activities: updatedActivities };
+      localStorage.setItem(dateKey, JSON.stringify(newData));
+    }
+
+    // Recalculate and update the state
+    updateCaloriesAndProtein(meals, updatedActivities);
   };
 
-  useEffect(() => {
+  const updateCaloriesAndProtein = (meals: any[], activities: any[]) => {
     const totalActivity = activities.reduce(
       (acc, activity) =>
         acc + parseFloat(activity.activityBurntCalories || "0"),
@@ -112,11 +160,11 @@ function Journal({
     setCalories(totalCalories);
     setActivity(totalActivity);
     setProtein(totalProtein);
-  }, [meals, activities, setCalories, setProtein]);
+  };
 
   return (
     <>
-      <p className="Date">{selectedDate?.toLocaleDateString()}</p>
+      <p className="Date">{selectedDate.toLocaleDateString()}</p>
       <h1 className="JournalMeals">Today's Meals</h1>
       <Table striped bordered hover size="sm">
         <thead>
