@@ -1,5 +1,5 @@
 import Table from "react-bootstrap/Table";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 type JournalProps = {
   selectedDate: Date;

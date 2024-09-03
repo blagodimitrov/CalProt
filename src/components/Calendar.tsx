@@ -11,14 +11,7 @@ type CalendarProps = {
   proteinGoal: number;
 };
 
-function Calendar({
-  onDateChange,
-  calories,
-  protein,
-  activity,
-  proteinGoal,
-  calorieGoal,
-}: CalendarProps) {
+function Calendar({ onDateChange, proteinGoal, calorieGoal }: CalendarProps) {
   const [selectedMonthData, setSelectedMonthData] = useState({
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
